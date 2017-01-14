@@ -1,0 +1,74 @@
+﻿@section SPAViews {@Html.Partial("_Home")}
+
+<script src="~/Scripts/jquery-1.10.2.min.js" type="text/javascript"></script>
+<script src="~/Scripts/knockout-2.3.0.js" type="text/javascript"></script>
+
+<div style="text-align: center">
+    <h1>Daily Task List</h1>
+    <hr/>
+
+    <h4>Today is @DateTime.Now.ToString("dddd, MMMM d, yyyy")</h4>
+
+    <hr/>
+    
+    
+    <p>First Name: <input data-bind="value: firstName" /></p>
+    <p>Last Name: <input data-bind="value: lastName" /></p>
+    <h3>Welcome, <span data-bind="text: fullName"></span></h3>
+    <hr/> 
+</div>
+
+
+<div style="text-align: center">
+    <form data-bind="submit: addTask">
+        Add Task: <input type="text" style="width: 350px" data-bind='value: taskToAdd, valueUpdate: "afterkeydown"'/>
+     <button type="submit" data-bind="enable: taskToAdd().length > 0"> + </button>
+    </form>
+
+    <h4>My List:</h4>
+    <select multiple="multiple" style="width: 450px; height: 12em" data-bind="options:allTasks, selectedOptions:selectedTasks"></select>
+
+
+    <div>
+        <button data-bind="click: deleteSelected, enable: selectedTasks().length > 0">Remove</button>
+        <button data-bind="click: orderTasks, enable: allTasks().length > 1">Reorder</button>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+   
+    var taskModel = function () {
+       
+        this.firstName = ko.observable("Mr.");
+        this.lastName = ko.observable("Wood");
+        this.taskToAdd = ko.observable("");
+        this.allTasks = ko.observableArray(["001a_Wake Up", "002a_Caffeinate", "003a_Read News", "004a_Code" ]);
+        this.selectedTasks = ko.observableArray(["001a_Wake Up"]);
+               
+        this.addTask = function () {
+            if ((this.taskToAdd() != "") && (this.allTasks.indexOf(this.taskToAdd()) < 0))
+                this.allTasks.push(this.taskToAdd());
+            this.taskToAdd("");
+        };
+
+        this.deleteSelected = function () {
+            this.allTasks.removeAll(this.selectedTasks());
+            this.selectedTasks([]);
+        };
+
+        this.orderTasks = function () {
+            this.allTasks.sort();
+        };
+
+        this.fullName = ko.computed(function () {
+            return this.firstName() + " " + this.lastName();
+        }, this);
+                     
+    };
+           
+      
+    ko.applyBindings(new taskModel());
+
+</script>
